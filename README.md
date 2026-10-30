@@ -1,7 +1,8 @@
-<H3>Name</H3>
-<H3>Register no.</H3>
-<H3>Date</H3>
+<H3>Name: JANAGIRAMAN M</H3> 
+<H3>Register no.: 212224230101</H3> 
+<H3>Date: 29-10-2026</H3> 
 <H3>Experiment No. 2 </H3>
+
 ## Implementation of Perceptron for Binary Classification
 # AIM:
 To implement a perceptron for classification using Python<BR>
@@ -49,11 +50,94 @@ STEP 9:For ‘N ‘ iterations ,do the following:<BR>
 STEP 10:Plot the error for each iteration <BR>
 STEP 11:Print the accuracy<BR>
 # PROGRAM:
-    ''' Insert your code here '''
+```python
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+from mpl_toolkits import mplot3d
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score
+from sklearn.preprocessing import LabelEncoder
+```
+```python
+df=pd.read_csv("/content/student_dataset_10000_rows.csv")
+df
+```
+```python
+x = df.iloc[:, [0, 1,6]].values
+y=df.iloc[:,7].values
+le=LabelEncoder()
+y=le.fit_transform(y)
+```
+```python
+fig = plt.figure(figsize=(8, 6))
+ax = fig.add_subplot(111, projection='3d')
+
+ax.scatter(x[y==0, 0], x[y==0, 1], x[y==0, 2],
+           color='red', label='Not Placed', alpha=0.5)
+
+ax.scatter(x[y==1, 0], x[y==1, 1], x[y==1, 2],
+           color='blue', label='Placed', alpha=0.5)
+```
+```python
+class Perceptron:
+    def __init__(self, learning_rate=0.05):
+        self.learning_rate = learning_rate
+        self.b = 0.0
+        self.w = None
+        self.misclassified_samples = []
+    def fit(self, x, y, n_iter=20):
+        self.b = 0.0
+        self.w = np.zeros(x.shape[1])
+        self.misclassified_samples = []
+        for _ in range(n_iter):
+            errors = 0
+            for xi, yi in zip(x, y):
+                update = self.learning_rate * (yi - self.predict(xi))
+                self.b += update
+                self.w += update * xi
+                errors += int(update != 0.0)
+            self.misclassified_samples.append(errors)
+    def f(self, x):
+        return np.dot(x, self.w) + self.b
+    def predict(self, x):
+        return np.where(self.f(x) >= 0, 1, -1)
+```
+```python
+y = np.where(y == 0, -1, 1)
+x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2, random_state=42)
+```
+```python
+classifier = Perceptron(learning_rate=0.01)
+classifier.fit(x_train, y_train, n_iter=50)
+```
+```python
+y_pred = classifier.predict(x_test)
+print("Accuracy:", accuracy_score(y_test, y_pred) * 100, "%")
+```
+```python
+plt.figure(figsize=(8, 6))
+
+plt.plot(range(1, len(classifier.misclassified_samples) + 1),
+         classifier.misclassified_samples, marker='o')
+
+plt.xlabel("Epoch")
+plt.ylabel("Errors")
+plt.title("Perceptron Learning")
+plt.show()
+```
+
+
 
 # OUTPUT:
+<img width="1263" height="522" alt="image" src="https://github.com/user-attachments/assets/c81a5281-9828-4d9c-9816-e7390848ded3" />
 
-    ''' Show your result '''
+<img width="687" height="653" alt="image" src="https://github.com/user-attachments/assets/f8cd77a5-455c-4e30-b6e0-d36e80019084" />
+
+<img width="417" height="32" alt="image" src="https://github.com/user-attachments/assets/a489ff8d-2961-472f-ba13-3901279a0e23" />
+
+<img width="807" height="647" alt="image" src="https://github.com/user-attachments/assets/6b6a9bbd-a828-473c-90b0-74bd427183de" />
+
 
 # RESULT:
  Thus, a single layer perceptron model is implemented using python to classify Iris data set.
